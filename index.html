@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="env.js"></script>
 <style>
   :root{
     --paper:#EEF1EE;
@@ -16,14 +17,16 @@
     --ink-soft:#5B6459;
     --line: rgba(32,38,31,0.12);
 
-    --calm:#6E97A0;
-    --calm-soft:#DCE7E8;
-    --happy:#E5A438;
-    --happy-soft:#F7E8CC;
-    --angry:#BF5136;
-    --angry-soft:#F1DAD2;
-    --sad:#5C6A8C;
-    --sad-soft:#DFE2EC;
+    --happy:#E5A438;    --happy-soft:#F7E8CC;
+    --excited:#D9762F;  --excited-soft:#F5DFC7;
+    --angry:#BF5136;    --angry-soft:#F1DAD2;
+    --sad:#5C6A8C;      --sad-soft:#DFE2EC;
+    --anxious:#8A6BAE;  --anxious-soft:#E7DEF0;
+    --calm:#6E97A0;     --calm-soft:#DCE7E8;
+    --tired:#7C7364;    --tired-soft:#E9E4DA;
+    --bored:#8B9088;    --bored-soft:#E5E8E3;
+    --confused:#B08A3E; --confused-soft:#F0E3C9;
+    --proud:#3E8A6E;    --proud-soft:#D8ECE3;
 
     --radius: 22px;
   }
@@ -46,7 +49,7 @@
 
   .card{
     width:100%;
-    max-width: 440px;
+    max-width: 480px;
   }
 
   .eyebrow{
@@ -58,25 +61,18 @@
   h1{
     font-family:'Fraunces', serif;
     font-weight:600;
-    font-size: clamp(30px, 7vw, 38px);
+    font-size: clamp(28px, 6.5vw, 36px);
     line-height:1.15;
-    margin: 0 0 28px 2px;
+    margin: 0 0 24px 2px;
   }
-  h1 em{
-    font-style: italic;
-    font-weight:500;
-  }
+  h1 em{ font-style: italic; font-weight:500; }
 
   .field-row{
     display:flex;
     gap:10px;
     margin-bottom: 12px;
   }
-
-  .field{
-    flex:1;
-    min-width:0;
-  }
+  .field{ flex:1; min-width:0; }
 
   label{
     display:block;
@@ -85,7 +81,7 @@
     margin: 0 0 6px 4px;
   }
 
-  input[type=text]{
+  input[type=text], select{
     width:100%;
     padding: 13px 15px;
     border-radius: 14px;
@@ -96,8 +92,17 @@
     color: var(--ink);
     outline:none;
     transition: border-color .15s ease, box-shadow .15s ease;
+    -webkit-appearance: none;
+    appearance: none;
   }
-  input[type=text]:focus{
+  select{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B6459' stroke-width='2' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat:no-repeat;
+    background-position: right 14px center;
+    background-size: 18px;
+    padding-right: 40px;
+  }
+  input[type=text]:focus, select:focus{
     border-color: var(--calm);
     box-shadow: 0 0 0 4px var(--calm-soft);
   }
@@ -106,20 +111,20 @@
   .moods{
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 24px 0 6px;
+    gap: 10px;
+    margin: 22px 0 4px;
   }
 
   .mood-btn{
     position:relative;
     border:none;
     cursor:pointer;
-    border-radius: var(--radius);
-    padding: 20px 14px 16px;
+    border-radius: 18px;
+    padding: 16px 12px 13px;
     text-align:left;
     display:flex;
     flex-direction:column;
-    gap: 10px;
+    gap: 8px;
     background: var(--tint);
     color: var(--ink);
     font-family:'Inter', sans-serif;
@@ -129,30 +134,30 @@
   .mood-btn:active{ transform: scale(0.97); }
   .mood-btn:disabled{ opacity:.45; cursor:not-allowed; }
 
-  .mood-btn svg{ width:30px; height:30px; }
+  .mood-btn svg{ width:26px; height:26px; }
 
-  .mood-btn .label{
-    font-weight:600;
-    font-size: 15.5px;
+  .mood-btn .label{ font-weight:600; font-size: 14px; }
+
+  .mood-btn.selected{ box-shadow: 0 0 0 2.5px var(--sel-color, var(--ink)) inset; }
+
+  /* per-mood colors */
+  .mood-btn.happy{ --tint: var(--happy-soft); } .mood-btn.happy svg{ color: var(--happy); } .mood-btn.happy.selected{ --sel-color: var(--happy); }
+  .mood-btn.excited{ --tint: var(--excited-soft); } .mood-btn.excited svg{ color: var(--excited); } .mood-btn.excited.selected{ --sel-color: var(--excited); }
+  .mood-btn.angry{ --tint: var(--angry-soft); } .mood-btn.angry svg{ color: var(--angry); } .mood-btn.angry.selected{ --sel-color: var(--angry); }
+  .mood-btn.sad{ --tint: var(--sad-soft); } .mood-btn.sad svg{ color: var(--sad); } .mood-btn.sad.selected{ --sel-color: var(--sad); }
+  .mood-btn.anxious{ --tint: var(--anxious-soft); } .mood-btn.anxious svg{ color: var(--anxious); } .mood-btn.anxious.selected{ --sel-color: var(--anxious); }
+  .mood-btn.calm{ --tint: var(--calm-soft); } .mood-btn.calm svg{ color: var(--calm); } .mood-btn.calm.selected{ --sel-color: var(--calm); }
+  .mood-btn.tired{ --tint: var(--tired-soft); } .mood-btn.tired svg{ color: var(--tired); } .mood-btn.tired.selected{ --sel-color: var(--tired); }
+  .mood-btn.bored{ --tint: var(--bored-soft); } .mood-btn.bored svg{ color: var(--bored); } .mood-btn.bored.selected{ --sel-color: var(--bored); }
+  .mood-btn.confused{ --tint: var(--confused-soft); } .mood-btn.confused svg{ color: var(--confused); } .mood-btn.confused.selected{ --sel-color: var(--confused); }
+  .mood-btn.proud{ --tint: var(--proud-soft); } .mood-btn.proud svg{ color: var(--proud); } .mood-btn.proud.selected{ --sel-color: var(--proud); }
+
+  .cause-wrap{
+    margin-top: 16px;
+    display:none;
   }
-
-  .mood-btn.calm{ --tint: var(--calm-soft); }
-  .mood-btn.happy{ --tint: var(--happy-soft); }
-  .mood-btn.angry{ --tint: var(--angry-soft); }
-  .mood-btn.sad{ --tint: var(--sad-soft); }
-
-  .mood-btn.calm svg{ color: var(--calm); }
-  .mood-btn.happy svg{ color: var(--happy); }
-  .mood-btn.angry svg{ color: var(--angry); }
-  .mood-btn.sad svg{ color: var(--sad); }
-
-  .mood-btn.selected{
-    box-shadow: 0 0 0 2.5px var(--sel-color, var(--ink)) inset;
-  }
-  .mood-btn.calm.selected{ --sel-color: var(--calm); }
-  .mood-btn.happy.selected{ --sel-color: var(--happy); }
-  .mood-btn.angry.selected{ --sel-color: var(--angry); }
-  .mood-btn.sad.selected{ --sel-color: var(--sad); }
+  .cause-wrap.show{ display:block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:translateY(0);} }
 
   .hint{
     font-size: 13px;
@@ -180,7 +185,6 @@
   button.submit:disabled{ opacity:.4; cursor:not-allowed; }
   button.submit:active:not(:disabled){ transform: scale(0.985); }
 
-  /* ---- Success state ---- */
   .success{
     display:none;
     text-align:center;
@@ -188,10 +192,7 @@
   }
   .success.show{ display:block; animation: rise .5s cubic-bezier(.2,.8,.2,1); }
 
-  @keyframes rise{
-    from{ opacity:0; transform: translateY(14px); }
-    to{ opacity:1; transform: translateY(0); }
-  }
+  @keyframes rise{ from{ opacity:0; transform: translateY(14px); } to{ opacity:1; transform: translateY(0); } }
 
   .success-icon{
     width:64px; height:64px;
@@ -225,11 +226,26 @@
     margin-top: 22px;
     opacity:.7;
   }
+
+  .env-warning{
+    background:#F1DAD2;
+    color:#7A3822;
+    border-radius:14px;
+    padding:14px 16px;
+    font-size:13px;
+    margin-bottom:18px;
+    display:none;
+  }
+  .env-warning.show{ display:block; }
 </style>
 </head>
 <body>
 
 <div class="card">
+  <div class="env-warning" id="envWarning">
+    ยังไม่ได้ตั้งค่า Supabase — กรุณาสร้างไฟล์ <code>.env</code> จาก <code>.env.example</code> แล้วรัน <code>node generate-env.js</code> เพื่อสร้าง <code>env.js</code>
+  </div>
+
   <div class="form-wrap" id="formWrap">
     <p class="eyebrow" id="todayLabel"></p>
     <h1>วันนี้<br><em>รู้สึก</em>ยังไงบ้าง?</h1>
@@ -246,13 +262,13 @@
     </div>
 
     <div class="moods" id="moods">
-      <button type="button" class="mood-btn calm" data-mood="calm">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.2 1.3 3.5 1.3 3.5-1.3 3.5-1.3"/><circle cx="9" cy="9.5" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>
-        <span class="label">สงบ</span>
-      </button>
       <button type="button" class="mood-btn happy" data-mood="happy">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M7.5 13.5c0 2.5 2 4 4.5 4s4.5-1.5 4.5-4"/><circle cx="9" cy="9.5" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>
         <span class="label">มีความสุข</span>
+      </button>
+      <button type="button" class="mood-btn excited" data-mood="excited">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="4.5"/></svg>
+        <span class="label">ตื่นเต้น</span>
       </button>
       <button type="button" class="mood-btn angry" data-mood="angry">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 15s1.2-1.2 3.5-1.2 3.5 1.2 3.5 1.2"/><path d="M7.7 8.7l2.6 1.3M16.3 8.7l-2.6 1.3"/></svg>
@@ -262,6 +278,46 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 15.8s1.2-1.3 3.5-1.3 3.5 1.3 3.5 1.3"/><circle cx="9" cy="9.5" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>
         <span class="label">เศร้า</span>
       </button>
+      <button type="button" class="mood-btn anxious" data-mood="anxious">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 15.5c1-1.5 2.3-1 4-1s3 1.8 4 .5"/><path d="M8.5 9.5v1.2M15.5 9.5v1.2"/></svg>
+        <span class="label">กังวล</span>
+      </button>
+      <button type="button" class="mood-btn calm" data-mood="calm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.2 1.3 3.5 1.3 3.5-1.3 3.5-1.3"/><circle cx="9" cy="9.5" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>
+        <span class="label">ผ่อนคลาย</span>
+      </button>
+      <button type="button" class="mood-btn tired" data-mood="tired">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 9.5h2.4M13.6 9.5H16"/><path d="M8.5 15.2c1-.8 2.3-.8 3.5-.8s2.5 0 3.5.8"/></svg>
+        <span class="label">เหนื่อย</span>
+      </button>
+      <button type="button" class="mood-btn bored" data-mood="bored">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5h7"/><circle cx="9" cy="9.5" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r=".6" fill="currentColor" stroke="none"/></svg>
+        <span class="label">เบื่อ</span>
+      </button>
+      <button type="button" class="mood-btn confused" data-mood="confused">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 0 1 4.7 1.1c0 1.6-2.2 1.7-2.2 3.2"/><circle cx="12" cy="16.2" r=".4" fill="currentColor" stroke="none"/></svg>
+        <span class="label">สับสน</span>
+      </button>
+      <button type="button" class="mood-btn proud" data-mood="proud">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l2.2 4.8L19 8l-3.5 3.6.9 5.2L12 14.3 7.6 16.8l.9-5.2L5 8l4.8-1.2z"/></svg>
+        <span class="label">ภูมิใจ</span>
+      </button>
+    </div>
+
+    <div class="cause-wrap" id="causeWrap">
+      <label for="cause">สาเหตุ (ถ้ามี)</label>
+      <select id="cause">
+        <option value="">-- เลือกสาเหตุ --</option>
+        <option value="การเรียน">การเรียน / การบ้าน</option>
+        <option value="เพื่อน">เพื่อนที่โรงเรียน</option>
+        <option value="ครอบครัว">ครอบครัว</option>
+        <option value="สุขภาพ">สุขภาพ / ร่างกาย</option>
+        <option value="กิจกรรม">กิจกรรม / ชมรม</option>
+        <option value="สอบ">การสอบ / ผลการเรียน</option>
+        <option value="นอนไม่พอ">นอนไม่พอ / พักผ่อนไม่พอ</option>
+        <option value="โซเชียล">โซเชียลมีเดีย</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
     </div>
 
     <p class="hint" id="hint">เลือกอารมณ์ของวันนี้ได้เลย</p>
@@ -283,26 +339,39 @@
 </div>
 
 <script>
-// ====== ตั้งค่า Supabase ======
-const SUPABASE_URL = "https://ywvlbaahjxdjwpeetbyy.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_lPmrqIlhBX5yryL3AiGMuA_bAR1yqTi";
-// ================================
+// ====== ตั้งค่า Supabase (อ่านจาก env.js ซึ่งสร้างจาก .env) ======
+const ENV = window.__ENV__ || {};
+const SUPABASE_URL = ENV.SUPABASE_URL || "";
+const SUPABASE_ANON_KEY = ENV.SUPABASE_ANON_KEY || "";
+// ================================================================
 
-const supabaseClient = (SUPABASE_URL.startsWith("http"))
+const supabaseClient = (SUPABASE_URL.startsWith("http") && SUPABASE_ANON_KEY)
   ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
 
+if(!supabaseClient){
+  document.getElementById('envWarning').classList.add('show');
+}
+
 const moodMeta = {
-  calm:  { th: "สงบ",        soft: "var(--calm-soft)",  col: "var(--calm)"  },
-  happy: { th: "มีความสุข",  soft: "var(--happy-soft)", col: "var(--happy)" },
-  angry: { th: "โกรธ",       soft: "var(--angry-soft)", col: "var(--angry)" },
-  sad:   { th: "เศร้า",      soft: "var(--sad-soft)",   col: "var(--sad)"   },
+  happy:    { th: "มีความสุข", soft: "var(--happy-soft)",    col: "var(--happy)"    },
+  excited:  { th: "ตื่นเต้น",   soft: "var(--excited-soft)",  col: "var(--excited)"  },
+  angry:    { th: "โกรธ",       soft: "var(--angry-soft)",    col: "var(--angry)"    },
+  sad:      { th: "เศร้า",      soft: "var(--sad-soft)",      col: "var(--sad)"      },
+  anxious:  { th: "กังวล",      soft: "var(--anxious-soft)",  col: "var(--anxious)"  },
+  calm:     { th: "ผ่อนคลาย",   soft: "var(--calm-soft)",     col: "var(--calm)"     },
+  tired:    { th: "เหนื่อย",    soft: "var(--tired-soft)",    col: "var(--tired)"    },
+  bored:    { th: "เบื่อ",      soft: "var(--bored-soft)",    col: "var(--bored)"    },
+  confused: { th: "สับสน",      soft: "var(--confused-soft)", col: "var(--confused)" },
+  proud:    { th: "ภูมิใจ",     soft: "var(--proud-soft)",    col: "var(--proud)"    },
 };
 
 let selectedMood = null;
 
 const nameInput = document.getElementById('sname');
 const noInput = document.getElementById('sno');
+const causeSelect = document.getElementById('cause');
+const causeWrap = document.getElementById('causeWrap');
 const submitBtn = document.getElementById('submitBtn');
 const hint = document.getElementById('hint');
 const todayLabel = document.getElementById('todayLabel');
@@ -325,6 +394,7 @@ document.querySelectorAll('.mood-btn').forEach(btn=>{
     document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedMood = btn.dataset.mood;
+    causeWrap.classList.add('show');
     validate();
   });
 });
@@ -350,7 +420,6 @@ function showAlreadyDone(){
   succ.classList.add('show');
 }
 
-// เช็คเบื้องต้นจากเครื่องนี้ (กันซ้ำแบบเร็ว) — การกันซ้ำจริงอยู่ที่ฐานข้อมูล
 function checkLocalPrefillWarning(){
   const name = nameInput.value.trim();
   const no = noInput.value.trim();
@@ -366,6 +435,7 @@ submitBtn.addEventListener('click', async ()=>{
   if(!selectedMood) return;
   const name = nameInput.value.trim();
   const no = noInput.value.trim();
+  const cause = causeSelect.value || null;
   if(!name || !no) return;
 
   submitBtn.disabled = true;
@@ -373,7 +443,7 @@ submitBtn.addEventListener('click', async ()=>{
 
   if(!supabaseClient){
     hint.classList.add('error');
-    hint.textContent = "ยังไม่ได้เชื่อมต่อฐานข้อมูล กรุณาตั้งค่า Supabase ก่อน";
+    hint.textContent = "ยังไม่ได้เชื่อมต่อฐานข้อมูล กรุณาตั้งค่า .env ก่อน";
     submitBtn.disabled = false;
     submitBtn.textContent = "บันทึกอารมณ์วันนี้";
     return;
@@ -382,10 +452,9 @@ submitBtn.addEventListener('click', async ()=>{
   try{
     const { error } = await supabaseClient
       .from('mood_entries')
-      .insert([{ student_name: name, student_no: no, mood: selectedMood, entry_date: todayKey() }]);
+      .insert([{ student_name: name, student_no: no, mood: selectedMood, cause: cause, entry_date: todayKey() }]);
 
     if(error){
-      // unique_violation = คนนี้ตอบไปแล้ววันนี้
       if(error.code === '23505'){
         localStorage.setItem(localDoneKey(name,no), '1');
         showAlreadyDone();
@@ -396,7 +465,6 @@ submitBtn.addEventListener('click', async ()=>{
 
     localStorage.setItem(localDoneKey(name,no), '1');
 
-    // แสดงผลสำเร็จ ปรับสีตามอารมณ์ที่เลือก
     const meta = moodMeta[selectedMood];
     const icon = document.getElementById('successIcon');
     icon.style.background = meta.soft;
@@ -416,7 +484,6 @@ submitBtn.addEventListener('click', async ()=>{
   }
 });
 
-// เช็ค localStorage ตอนเปิดหน้า (ถ้าเคยกรอกชื่อ-เลขที่นี้มาก่อนในวันนี้จากเครื่องนี้)
 window.addEventListener('DOMContentLoaded', ()=>{
   validate();
 });
